@@ -55,7 +55,7 @@ export default class EDIConnect extends Connect {
   get views() {
     // return object of views
     return {
-      config : 'connect/edi/config',
+    //  config : 'connect/edi/config',
     };
   }
 
