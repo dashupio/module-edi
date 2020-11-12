@@ -1,11 +1,11 @@
 
 // import connect interface
-import { Connect } from '@dashup/module';
+import { Struct } from '@dashup/module';
 
 /**
  * build address helper
  */
-export default class EDIConnect extends Connect {
+export default class EDIConnect extends Struct {
   /**
    * construct edi connector
    *

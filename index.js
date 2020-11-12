@@ -18,20 +18,11 @@ class EdiModule extends Module {
   }
   
   /**
-   * Register all connect interfaces here
-   * 
-   * ```
-   * // register connect class
-   * register(Connect);
-   * ```
-   * 
-   * Class `Connect` should extend `require('@dashup/module').Connect`
-   * 
-   * @param {Function} register 
+   * Register all interfaces here
    */
-  actions(register) {
+  register(fn) {
     // register sms action
-    register(EdiConnect);
+    fn('connect', EdiConnect);
   }
 }
 
