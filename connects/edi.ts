@@ -1,13 +1,16 @@
 
-// import connect interface
+// import connect interface;
+import got from 'got';
 import { Struct } from '@dashup/module';
+import { X12parser } from 'x12-parser';
+import { createReadStream } from 'fs';
 
 /**
  * build address helper
  */
 export default class EDIConnect extends Struct {
   /**
-   * construct edi connector
+   * construct google connector
    *
    * @param args 
    */
@@ -15,6 +18,8 @@ export default class EDIConnect extends Struct {
     // run super
     super(...args);
     
+    // save action
+    this.groupsAction = this.groupsAction.bind(this);
   }
 
   /**
@@ -38,7 +43,7 @@ export default class EDIConnect extends Struct {
    */
   get icon() {
     // return connect icon label
-    return 'fab fa-edi';
+    return 'fa fa-money-check-edit';
   }
 
   /**
@@ -46,7 +51,9 @@ export default class EDIConnect extends Struct {
    */
   get data() {
     // return connect data
-    return {};
+    return {
+      
+    };
   }
 
   /**
@@ -55,7 +62,7 @@ export default class EDIConnect extends Struct {
   get views() {
     // return object of views
     return {
-    //  config : 'connect/edi/config',
+      config : 'connect/edi',
     };
   }
 
@@ -65,7 +72,7 @@ export default class EDIConnect extends Struct {
   get actions() {
     // return connect actions
     return {
-      guild : this.guildAction,
+      groups : this.groupsAction,
     };
   }
 
@@ -74,7 +81,7 @@ export default class EDIConnect extends Struct {
    */
   get categories() {
     // return array of categories
-    return ['channel'];
+    return ['model'];
   }
 
   /**
@@ -82,19 +89,63 @@ export default class EDIConnect extends Struct {
    */
   get description() {
     // return description string
-    return 'EDI Connector';
+    return 'Google Sheets Connector';
   }
 
   /**
-   * action method
+   * groups action
    *
-   * @param param0 
+   * @param opts 
    * @param connect 
-   * @param data 
    */
-  async save({ req, dashup }, connect) {
-    // check dashup
-    if (!dashup) return;
+  async groupsAction(opts, connect) {
+    // data
+    const data = [];
     
+    // stream
+    const parser = new X12parser();
+
+    // await
+    const promise = new Promise(async (resolve, reject) => {
+      // parser
+      parser
+        .on('error', reject)
+        .on('data', (r) => data.push(r))
+        .on('end', resolve);
+    });
+
+    // fetch
+    got.stream(connect.file[0] ? connect.file[0].url : connect.file.url)
+      .pipe(parser);
+
+    // await promise
+    await promise;
+
+    // loop data
+    const dataObj = data.reduce((accum, item) => {
+      // check item value
+      if (!accum[item.name]) accum[item.name] = [];
+
+      // value
+      const value = [];
+
+      // for
+      for (let i = 1; i < 100; i++) {
+        // check
+        if (!item[i]) break;
+        
+        // push
+        value.push(item[i]);
+      }
+
+      // add item
+      accum[item.name].push(value);
+
+      // return accum
+      return accum;
+    }, {});
+
+    // return object
+    return dataObj;
   }
 }
